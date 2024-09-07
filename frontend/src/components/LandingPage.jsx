@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    
+
     const [isDarkMode, setIsDarkMode] = useState(() => {
         // Retrieve the dark mode state from local storage
         const savedMode = localStorage.getItem('isDarkMode');
@@ -33,7 +33,7 @@ const LandingPage = () => {
     function handleGetStart() {
         try{
             if (!isLoggedIn){
-                fetch()
+                window.location.href = "http://localhost:8000/oauth/login/"
             }
             setIsLoggedIn(true);
             navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
@@ -62,7 +62,7 @@ const LandingPage = () => {
             Search and visualize clusters of semantically related documents.
           </p>
           <button onClick ={handleGetStart}className="bg-blue-500 dark:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800 transition">
-            Get Started
+            Get Started With Notion
           </button>
         </div>
   
