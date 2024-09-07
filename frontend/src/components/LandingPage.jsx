@@ -5,8 +5,15 @@ import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const [isDarkMode, setIsDarkMode] = useState(false)
-    const [isLogin, setIsLogin] = useState(false)
+    
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        // Retrieve the dark mode state from local storage
+        const savedMode = localStorage.getItem('isDarkMode');
+        return savedMode ? JSON.parse(savedMode) : false;
+    });
+
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         if (isDarkMode) {
@@ -14,6 +21,8 @@ const LandingPage = () => {
         } else {
           document.documentElement.classList.remove('dark');
         }
+
+        localStorage.setItem('isDarkMode', JSON.stringify(isDarkMode));
       }, [isDarkMode]);
 
     const handleBlackMode = () => {
@@ -23,10 +32,11 @@ const LandingPage = () => {
     
     function handleGetStart() {
         try{
-            if (!isLogin){
+            if (!isLoggedIn){
                 fetch()
             }
-            navigate('/dashboard')
+            setIsLoggedIn(true);
+            navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
         } catch(e) {
             console.log(e)
         }
