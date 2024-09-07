@@ -11,7 +11,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path = "/" element = {<LandingPage/>}></Route>
-        <Route path = "/search" elemnt = {<SearchForm/>}></Route>
+        <Route path = "/search" element = {<SearchForm/>}></Route>
       </Routes>
     </Router>
   );
