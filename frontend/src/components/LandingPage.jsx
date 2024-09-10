@@ -26,15 +26,15 @@ const LandingPage = () => {
       }, [isDarkMode]);
 
     const handleBlackMode = () => {
+      
         setIsDarkMode(!isDarkMode)
-        console.log(isDarkMode)
+        localStorage.setItem('darkMode', !isDarkMode);
+        
     }
     
-    function handleGetStart() {
+    async function handleGetStart() {
         try{
-            if (!isLoggedIn){
-                window.location.href = "http://localhost:8000/oauth/login/"
-            }
+            const response = await fetch("http://localhost:8000/api/is_authenticated/")
             setIsLoggedIn(true);
             navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
         } catch(e) {

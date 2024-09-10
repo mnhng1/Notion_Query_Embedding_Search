@@ -1,18 +1,22 @@
 
 import darkWhiteMode from './../assets/dark_white_mode.svg';
 import {useState, useEffect} from 'react';
-import {  useLocation } from 'react-router-dom';
+
 
 const Dashboard = () => {
-    const location = useLocation()
-    const [darkMode, setDarkMode] = useState(location.state?.isDarkMode ?? false);
-  
+    
+    const [darkMode, setDarkMode] = useState(() => {
+      const savedMode = localStorage.getItem('isDarkMode')
+
+      return savedMode ? JSON.parse(savedMode) : false;
+    })
     
 
     const handleDarkMode = () => {
         setDarkMode(prevDarkMode => {
             const newDarkMode = !prevDarkMode;
             document.documentElement.classList.toggle('dark', newDarkMode);
+            localStorage.setItem('isDarkMode', JSON.stringify(newDarkMode))
             return newDarkMode;
         });
     };
