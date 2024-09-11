@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from rest_framework import status
 import requests
 from dotenv import load_dotenv
+from django.contrib.auth.decorators import login_required
 
 from requests_oauthlib import OAuth2Session
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -27,6 +28,10 @@ def notion_callback(request):
     notion = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI)
     token = notion.fetch_token(TOKEN_URL, authorization_response=request.build_absolute_uri(), client_secret=CLIENT_SECRET)
 
-    # Now you have the token, you can store it and use it to make API calls to Notion
+    # token, you can store it and use it to make API calls to Notion
     request.session['oauth_token'] = token
     return redirect('http://localhost:5173/dashboard') 
+
+
+def is_authenticated(request):
+    return JsonResponse({'isAuthenticated': True})

@@ -61,7 +61,13 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
+    'http://localhost:5173'
 ]
+CORS_ALLOW_CREDENTIALS = True  # Allow credentials to be included
+CORS_ALLOW_ORIGINS = [
+    "http://localhost:5173",  # Add the origin of your frontend (Vite + React)
+]
+
 ROOT_URLCONF = 'NQS.urls'
 
 TEMPLATES = [

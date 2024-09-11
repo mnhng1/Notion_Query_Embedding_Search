@@ -35,7 +35,7 @@ const LandingPage = () => {
     async function handleGetStart() {
       try {
           // Step 1: Check if user is authenticated by making a backend request
-          const response = await fetch("http://localhost:8000/api/is_authenticated/", {
+          const response = await fetch("http://localhost:8000/oauth/is_authenticated/", {
               method: "GET",
               credentials: "include" // Ensures cookies (like session tokens) are included in the request
           });
