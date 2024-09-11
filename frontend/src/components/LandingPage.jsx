@@ -1,10 +1,12 @@
 import darkWhiteMode from './../assets/dark_white_mode.svg';
 import {useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [isDarkMode, setIsDarkMode] = useState(() => {
         // Retrieve the dark mode state from local storage
@@ -13,7 +15,7 @@ const LandingPage = () => {
     });
 
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    
 
     useEffect(() => {
         if (isDarkMode) {
@@ -41,13 +43,14 @@ const LandingPage = () => {
           });
           
           const data = await response.json();
+          console.log(data)
           
           // Step 2: If the user is not authenticated, redirect to OAuth login
           if (!data.isAuthenticated) {
               window.location.href = "http://localhost:8000/oauth/login/";
           } else {
               // Step 3: If authenticated, proceed to dashboard with state
-              setIsLoggedIn(true);
+              login();
               navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
           }
       } catch (e) {

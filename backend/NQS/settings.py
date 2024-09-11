@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,7 +55,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    
 
     
 ]
@@ -65,7 +66,24 @@ CORS_ORIGIN_WHITELIST = [
 ]
 CORS_ALLOW_CREDENTIALS = True  # Allow credentials to be included
 CORS_ALLOW_ORIGINS = [
-    "http://localhost:5173",  # Add the origin of your frontend (Vite + React)
+    "http://localhost:5173",
+    'http://localhost:3000',  # Add the origin of your frontend (Vite + React)
+]
+
+# Allow specific HTTP methods
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+# Allow specific headers
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
 ]
 
 ROOT_URLCONF = 'NQS.urls'

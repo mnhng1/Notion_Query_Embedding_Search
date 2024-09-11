@@ -4,7 +4,8 @@ from django.shortcuts import redirect, render
 from rest_framework import status
 import requests
 from dotenv import load_dotenv
-from django.contrib.auth.decorators import login_required
+
+from .ultils import notion_login_required
 
 from requests_oauthlib import OAuth2Session
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -30,8 +31,12 @@ def notion_callback(request):
 
     # token, you can store it and use it to make API calls to Notion
     request.session['oauth_token'] = token
+    request.session["is_authenticated"] = True
     return redirect('http://localhost:5173/dashboard') 
 
-
+@notion_login_required
 def is_authenticated(request):
     return JsonResponse({'isAuthenticated': True})
+
+def test_cors(request):
+    return JsonResponse({'message': "cors is here"})
