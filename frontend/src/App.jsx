@@ -7,9 +7,11 @@ import Dashboard from './components/Dashboard';
 import PrivateRoutes from './components/ProtectedRoute';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from './components/AuthContext';
 
 const App = () => {
   return (
+    <AuthProvider>
     <Router>
       <Routes>
         <Route path = "/" element = {<LandingPage/>}></Route>
@@ -18,6 +20,7 @@ const App = () => {
         </Route>
       </Routes>
     </Router>
+    </AuthProvider>
   );
 };
 

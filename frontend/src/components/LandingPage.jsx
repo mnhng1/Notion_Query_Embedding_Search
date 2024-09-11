@@ -6,7 +6,7 @@ import { useAuth } from './AuthContext';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const login  = useAuth();
 
     const [isDarkMode, setIsDarkMode] = useState(() => {
         // Retrieve the dark mode state from local storage

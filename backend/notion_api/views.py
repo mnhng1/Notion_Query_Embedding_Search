@@ -36,7 +36,9 @@ def notion_callback(request):
 
 @notion_login_required
 def is_authenticated(request):
-    return JsonResponse({'isAuthenticated': True})
+    authentication = request.session.get("is_authenticated")
+    
+    return JsonResponse({'isAuthenticated': authentication})
 
 def test_cors(request):
     return JsonResponse({'message': "cors is here"})
