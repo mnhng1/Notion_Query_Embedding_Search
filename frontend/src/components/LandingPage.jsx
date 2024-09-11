@@ -33,15 +33,27 @@ const LandingPage = () => {
     }
     
     async function handleGetStart() {
-        try{
-            const response = await fetch("http://localhost:8000/api/is_authenticated/")
-            setIsLoggedIn(true);
-            navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
-        } catch(e) {
-            console.log(e)
-        }
-    }
-
+      try {
+          // Step 1: Check if user is authenticated by making a backend request
+          const response = await fetch("http://localhost:8000/api/is_authenticated/", {
+              method: "GET",
+              credentials: "include" // Ensures cookies (like session tokens) are included in the request
+          });
+          
+          const data = await response.json();
+          
+          // Step 2: If the user is not authenticated, redirect to OAuth login
+          if (!data.isAuthenticated) {
+              window.location.href = "http://localhost:8000/oauth/login/";
+          } else {
+              // Step 3: If authenticated, proceed to dashboard with state
+              setIsLoggedIn(true);
+              navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
+          }
+      } catch (e) {
+          console.log(e);
+      }
+  }
     return (
         <div className="min-h-screen flex flex-col justify-between bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 px-4">
         <header className='pt-4'>
