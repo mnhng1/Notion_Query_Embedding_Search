@@ -1,12 +1,15 @@
-import {  Outlet } from 'react-router-dom'
+// ProtectedRoute.jsx
+import { Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
-const PrivateRoutes = () => {
-    const { isAuthenticated } = useAuth(); 
-return (
-    isAuthenticated ? <Outlet /> : window.location.href = "http://localhost:8000/oauth/login/"
-  )
-}
+const ProtectedRoute = () => {
+  const { isAuthenticated, loading } = useAuth();
 
+  if (loading) {
+    return <p>Loading...</p>; // Show a loading state while checking authentication
+  }
+  
+  return isAuthenticated ? <Outlet /> : window.location.href =  "http://localhost:8000/oauth/login" ;
+};
 
-export default PrivateRoutes
+export default ProtectedRoute;

@@ -22,8 +22,7 @@ TOKEN_URL = 'https://api.notion.com/v1/oauth/token'
 NOTION_AUTH_URL = "https://api.notion.com/v1/oauth/authorize?client_id=77626488-2026-45d6-bced-1f768e0d0f48&response_type=code&owner=user&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback"
 
 def notion_login(request):
-    if request.session.get('is_authenticated') == True:
-        return redirect('http://localhost:5173/dashboard')
+    
     notion = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI)
     authorization_url, state = notion.authorization_url(AUTHORIZATION_BASE_URL)
     

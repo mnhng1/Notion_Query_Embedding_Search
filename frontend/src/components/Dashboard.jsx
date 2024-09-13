@@ -26,6 +26,8 @@ const Dashboard = () => {
         document.documentElement.classList.toggle('dark', darkMode);
     }, [darkMode]);
 
+    
+
     return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
       {/* Header */}

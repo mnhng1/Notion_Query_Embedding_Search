@@ -6,7 +6,7 @@ import { useAuth } from './AuthContext';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { isAuthenticated, login } = useAuth();
 
     const [isDarkMode, setIsDarkMode] = useState(() => {
         // Retrieve the dark mode state from local storage
@@ -27,36 +27,36 @@ const LandingPage = () => {
         localStorage.setItem('isDarkMode', JSON.stringify(isDarkMode));
       }, [isDarkMode]);
 
+
+
     const handleBlackMode = () => {
       
         setIsDarkMode(!isDarkMode)
         localStorage.setItem('darkMode', !isDarkMode);
         
     }
+
+    useEffect(() => {
+      if (!isAuthenticated) {
+        login();
+      } else {
+        navigate('/dashboard')
+      }
+    }, [isAuthenticated, login, navigate]);
     
     async function handleGetStart() {
-      try {
+      
           // Step 1: Check if user is authenticated by making a backend request
-          const response = await fetch("http://localhost:8000/oauth/is_authenticated/", {
-              method: "GET",
-              credentials: "include" // Ensures cookies (like session tokens) are included in the request
-          });
-          
-          const data = await response.json();
-          console.log(data)
-          
-          // Step 2: If the user is not authenticated, redirect to OAuth login
-          if (!data.isAuthenticated) {
-              window.location.href = "http://localhost:8000/oauth/login/";
-          } else {
-              // Step 3: If authenticated, proceed to dashboard with state
-              login()
-              navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
+          if (!isAuthenticated) {
+            login();
           }
-      } catch (e) {
-          console.log(e);
-      }
-  }
+          
+          else {
+              // Step 3: If authenticated, proceed to dashboard with state
+              navigate('/dashboard');
+          }
+        }
+ 
     return (
         <div className="min-h-screen flex flex-col justify-between bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 px-4">
         <header className='pt-4'>
