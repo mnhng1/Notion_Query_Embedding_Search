@@ -6,6 +6,7 @@ import requests
 from dotenv import load_dotenv
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from .models import NotionToken
 
 
 from .ultils import check_notion_login
@@ -33,8 +34,12 @@ def notion_callback(request):
     notion = OAuth2Session(CLIENT_ID, redirect_uri=REDIRECT_URI)
     token = notion.fetch_token(TOKEN_URL, authorization_response=request.build_absolute_uri(), client_secret=CLIENT_SECRET)
 
-    # token, you can store it and use it to make API calls to Notion
+    #Storing token to database
+
     request.session['oauth_token'] = token
+
+    print(token)
+    
     request.session["is_authenticated"] = True
     request.session.save()
     return redirect('http://localhost:5173/dashboard') 
@@ -48,3 +53,12 @@ def is_authenticated(request):
 
 def test_cors(request):
     return JsonResponse({'message': "cors is here"})
+
+
+    {'access_token': '...', 
+    'token_type': 'bearer', 'bot_id': '...',
+     'workspace_name': "Minh Nguyen's Notion", 'workspace_icon': None, 
+     'workspace_id': '2e740ccc-a178-489a-8680-ea342000a79e', 
+     'owner': {'type': 'user', 'user': {'object': 'user', 'id': '44400f5d-689b-4441-ae2a-6f114561ece9', 
+     'name': 'Minh Nguyen', 'avatar_url': None, 'type': 'person', 'person': {}}}, 
+     'duplicated_template_id': None, 'request_id': '3d3bd3ad-5373-4e3f-bc57-125dd2a26d74'}

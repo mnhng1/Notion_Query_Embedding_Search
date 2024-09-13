@@ -37,9 +37,7 @@ const LandingPage = () => {
     }
 
     useEffect(() => {
-      if (!isAuthenticated) {
-        login();
-      } else {
+      if (isAuthenticated) {
         navigate('/dashboard')
       }
     }, [isAuthenticated, login, navigate]);
