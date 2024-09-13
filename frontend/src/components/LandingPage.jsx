@@ -6,7 +6,7 @@ import { useAuth } from './AuthContext';
 
 const LandingPage = () => {
     const navigate = useNavigate();
-    const login  = useAuth();
+    const { login } = useAuth();
 
     const [isDarkMode, setIsDarkMode] = useState(() => {
         // Retrieve the dark mode state from local storage
@@ -50,7 +50,7 @@ const LandingPage = () => {
               window.location.href = "http://localhost:8000/oauth/login/";
           } else {
               // Step 3: If authenticated, proceed to dashboard with state
-              login();
+              login()
               navigate('/dashboard', { state: { isLoggedIn: true, isDarkMode } });
           }
       } catch (e) {

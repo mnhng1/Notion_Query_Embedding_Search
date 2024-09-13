@@ -65,10 +65,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:5173'
 ]
 CORS_ALLOW_CREDENTIALS = True  # Allow credentials to be included
-CORS_ALLOW_ORIGINS = [
-    "http://localhost:5173",
-    'http://localhost:3000',  # Add the origin of your frontend (Vite + React)
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Allow specific HTTP methods
 CORS_ALLOW_METHODS = [

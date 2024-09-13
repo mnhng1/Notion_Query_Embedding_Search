@@ -1,9 +1,10 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import {  Outlet } from 'react-router-dom'
+import { useAuth } from './AuthContext';
 
 const PrivateRoutes = () => {
-  let auth = {'token':true}
+    const { isAuthenticated } = useAuth(); 
 return (
-    auth.token ? <Outlet/> : <Navigate to='http://localhost:8000/oauth/login'/>
+    isAuthenticated ? <Outlet /> : window.location.href = "http://localhost:8000/oauth/login/"
   )
 }
 
