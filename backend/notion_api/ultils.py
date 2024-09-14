@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from functools import wraps
 import asyncio
+from .models import NotionToken
 
 def check_notion_login(request):
     # Handle CORS preflight request
