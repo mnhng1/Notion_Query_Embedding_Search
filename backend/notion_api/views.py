@@ -99,6 +99,14 @@ def fetch_notion_pages(request):
 
     if response.status_code == 200:
         pages = response.json()["results"]
+        for page in pages:
+            NotionPage.objects.update_or_create(
+                notion_id=page['id'],
+                defaults ={
+                    'title': page['properties'].get('Name', {}).get('title', [{}])[0].get('plain_text', 'Untitled'),
+                    'content': json.dumps(page),
+                }
+            )
         return JsonResponse({"pages": pages}, status=200)
     else:
         return JsonResponse({"error": "Failed to fetch pages"}, status=response.status_code)
