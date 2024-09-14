@@ -6,10 +6,11 @@ import requests
 from dotenv import load_dotenv
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .models import NotionToken
+from .models import NotionToken 
+from .ultils import get_user_token,check_notion_login
 
 
-from .ultils import check_notion_login
+
 
 from requests_oauthlib import OAuth2Session
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -37,10 +38,22 @@ def notion_callback(request):
     #Storing token to database
 
     request.session['oauth_token'] = token
-
-    print(token)
-    
     request.session["is_authenticated"] = True
+
+    NotionToken.objects.update_or_create (
+        user = request.user, 
+        defaults = {
+        'access_token': token['access_token'],
+        'workspace_name': token['workspace_name'],
+        'workspace_id': token['workspace_id'],
+        'bot_id':token['bot_id'],
+        'name' : token['name'],
+        }
+    )
+    
+
+
+
     request.session.save()
     return redirect('http://localhost:5173/dashboard') 
 
@@ -51,14 +64,17 @@ def is_authenticated(request):
     print(authentication)
     return JsonResponse({'isAuthenticated': authentication})
 
-def test_cors(request):
-    return JsonResponse({'message': "cors is here"})
 
 
-    {'access_token': '...', 
-    'token_type': 'bearer', 'bot_id': '...',
-     'workspace_name': "Minh Nguyen's Notion", 'workspace_icon': None, 
-     'workspace_id': '2e740ccc-a178-489a-8680-ea342000a79e', 
-     'owner': {'type': 'user', 'user': {'object': 'user', 'id': '44400f5d-689b-4441-ae2a-6f114561ece9', 
-     'name': 'Minh Nguyen', 'avatar_url': None, 'type': 'person', 'person': {}}}, 
-     'duplicated_template_id': None, 'request_id': '3d3bd3ad-5373-4e3f-bc57-125dd2a26d74'}
+
+
+def fetch_notion_pages(request):
+    token = get_user_token(request.user):
+
+    if token is None:
+        return JsonResponse({'error': 'User not authenticated with Notion'}, status = 401 )
+    
+    headers = {
+        
+    }
+

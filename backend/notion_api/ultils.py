@@ -19,4 +19,11 @@ def check_notion_login(request):
     # Return None if authenticated
     return None
     
-  
+
+
+def get_user_token(user):
+    try:
+        notion_token = NotionToken.objects.get(user=user)
+        return notion_token.access_token
+    except NotionToken.DoesNotExist:
+        return None
