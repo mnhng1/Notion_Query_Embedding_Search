@@ -72,24 +72,24 @@ def is_authenticated(request):
 
 
 def fetch_notion_pages(request):
-    # Check if the user is authenticated
-    
+    if not request.session.get('is_authenticated'):
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-    
-        # Get the access token from the session
     token = request.session.get('oauth_token')
     access_token = token['access_token']
     headers = {
-    "Authorization": f"Bearer {access_token}",
-    "Content-Type": "application/json",
-    "Notion-Version": "2022-06-28"  # Ensure correct API version
+        "Authorization": f"Bearer {access_token}",
+        "Notion-Version": "2022-06-28"
     }
 
     url = "https://api.notion.com/v1/search"
     data = {
-        "query": "",  # Search term, can be specific title/keywords
+        "filter": {
+            "value": "page",
+            "property": "object"
+        },
         "sort": {
-            "direction": "ascending",
+            "direction": "descending",
             "timestamp": "last_edited_time"
         }
     }
@@ -97,9 +97,27 @@ def fetch_notion_pages(request):
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
-        pages = response.json()["results"]
-        
-        return JsonResponse({"pages": pages}, status=200)
+        pages_data = response.json().get("pages", [])
+        for page in pages_data:
+            if page['object'] == 'page':
+                title = 'Untitled'
+                if 'properties' in page and 'Name' in page['properties']:
+                    title_property = page['properties']['Name']
+                    if 'title' in title_property and title_property['title']:
+                        title = title_property['title'][0].get('plain_text', 'Untitled')
+                elif 'properties' in page and 'title' in page['properties']:
+                    title_property = page['properties']['title']
+                    if 'title' in title_property and title_property['title']:
+                        title = title_property['title'][0].get('plain_text', 'Untitled')
+
+                NotionPage.objects.update_or_create(
+                    notion_id=page['id'],
+                    defaults={
+                        'title': title,
+                        'content': page,
+                    }
+                )
+        return JsonResponse({"message": f"Fetched and stored {len(pages_data)} pages"})
     else:
         return JsonResponse({"error": "Failed to fetch pages"}, status=response.status_code)
 
