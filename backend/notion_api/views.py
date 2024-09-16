@@ -97,16 +97,15 @@ def fetch_notion_pages(request):
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
-        pages_data = response.json().get("pages", [])
-        for page in pages_data:
+        response_data = response.json()
+        pages = response_data.get("pages", [])
+        
+        stored_count = 0
+        for page in pages:
             if page['object'] == 'page':
                 title = 'Untitled'
-                if 'properties' in page and 'Name' in page['properties']:
-                    title_property = page['properties']['Name']
-                    if 'title' in title_property and title_property['title']:
-                        title = title_property['title'][0].get('plain_text', 'Untitled')
-                elif 'properties' in page and 'title' in page['properties']:
-                    title_property = page['properties']['title']
+                if 'properties' in page:
+                    title_property = page['properties'].get('Name', {}) or page['properties'].get('title', {})
                     if 'title' in title_property and title_property['title']:
                         title = title_property['title'][0].get('plain_text', 'Untitled')
 
@@ -117,7 +116,19 @@ def fetch_notion_pages(request):
                         'content': page,
                     }
                 )
-        return JsonResponse({"message": f"Fetched and stored {len(pages_data)} pages"})
-    else:
-        return JsonResponse({"error": "Failed to fetch pages"}, status=response.status_code)
+                stored_count += 1
 
+        return JsonResponse({"message": response_data})
+    else:
+        return JsonResponse({"error": "Failed to fetch pages", "status": response.status_code, "response": response.text}, status=response.status_code)
+
+
+def fetch_page_contents(page_id, user_token):
+    user_token = request.session.get('oauth_token')['access_token']
+
+    url = f"https://api.notion.com/v1/blocks/{page_id}/children"
+    headers = {
+        "Authorization": f"Bearer {user_token}",
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28"
+    }
