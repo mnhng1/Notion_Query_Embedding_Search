@@ -44,18 +44,12 @@ def notion_callback(request):
     request.session["is_authenticated"] = True
 
     # Create or update NotionToken
-    NotionToken.objects.update_or_create(
-        workspace_id=token['workspace_id'],
-        defaults={
-            'access_token': token['access_token'],
-            'workspace_name': token['workspace_name'],
-            'bot_id': token['bot_id'],
-            'name': token['owner']['user']['name'],
-        }
-    )
+    
     
 
-
+    if not request.session.exists(request.session.session_key):
+            request.session.create()
+        update_or_create_user_token(request.session.session_key, access_token=access_token, token_type= token_type, refresh_token= refresh_token, expires_in= expires_in)
 
     request.session.save()
     return redirect('http://localhost:5173/dashboard') 
@@ -66,9 +60,6 @@ def is_authenticated(request):
     authentication = request.session.get("is_authenticated")
     print(authentication)
     return JsonResponse({'isAuthenticated': authentication})
-
-
-
 
 
 def fetch_notion_pages(request):
@@ -123,12 +114,33 @@ def fetch_notion_pages(request):
         return JsonResponse({"error": "Failed to fetch pages", "status": response.status_code, "response": response.text}, status=response.status_code)
 
 
-def fetch_page_contents(page_id, user_token):
-    user_token = request.session.get('oauth_token')['access_token']
-
+def fetch_important_sections(request):
+    token = NotionToken.objects.get(user=request.user).access_token
+    page_id = request.GET.get('page_id')
     url = f"https://api.notion.com/v1/blocks/{page_id}/children"
     headers = {
-        "Authorization": f"Bearer {user_token}",
-        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}",
         "Notion-Version": "2022-06-28"
     }
+
+    response = requests.get(url, headers = headers)
+
+    if response.status_code == 200:
+        blocks = response.json().get('results', [])
+        keywords = ['#important', '#summary']  # You can extend this to accept user input
+        sections = ['heading_1', 'heading_2']
+        filtered_blocks = []
+
+        for block in blocks:
+                block_type = block['type']
+                if block_type in sections:
+                    filtered_blocks.append(block)
+                else:
+                    content = block[block_type].get('text', [])
+                    text = ''.join([elem['text']['content'] for elem in content])
+                    if any(keyword in text for keyword in keywords):
+                        filtered_blocks.append(block)
+
+        return JsonResponse({'filtered_blocks': filtered_blocks})
+    else:
+        return JsonResponse({'error': 'Failed to fetch page content'}, status=400)
