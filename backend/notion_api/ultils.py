@@ -22,7 +22,6 @@ def check_notion_login(request):
     
 def update_or_create_user_token(request):
     session_id = request.session.session_key
-    
 
     NotionToken.objects.update_or_create(
         workspace_id=token['workspace_id'],
@@ -33,8 +32,8 @@ def update_or_create_user_token(request):
             'name': token['owner']['user']['name'],
         }
     )
+
     
-    if request.session.session_key
 
 def get_user_token(user):
     try:

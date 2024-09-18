@@ -23,6 +23,6 @@ urlpatterns = [
     path('', include('notion_api.urls')),
     path('oauth/', include('notion_api.urls')),
     path('dashboard/', include("notion_api.urls")),
-    path('test-cors/', include("notion_api.urls"))
+    
     
 ]

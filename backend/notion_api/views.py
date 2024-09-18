@@ -45,13 +45,10 @@ def notion_callback(request):
 
     # Create or update NotionToken
     
-    
-
-    if not request.session.exists(request.session.session_key):
-            request.session.create()
-        update_or_create_user_token(request.session.session_key, access_token=access_token, token_type= token_type, refresh_token= refresh_token, expires_in= expires_in)
+    print(request.session['oauth_token'],request.session["is_authenticated"] )
 
     request.session.save()
+    
     return redirect('http://localhost:5173/dashboard') 
 
 
@@ -115,7 +112,8 @@ def fetch_notion_pages(request):
 
 
 def fetch_important_sections(request):
-    token = NotionToken.objects.get(user=request.user).access_token
+    token = request.session.get('oauth_token')
+    print(token)
     page_id = request.GET.get('page_id')
     url = f"https://api.notion.com/v1/blocks/{page_id}/children"
     headers = {
