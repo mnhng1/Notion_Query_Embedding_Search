@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 
 
 class NotionToken(models.Model):
-    user = models.CharField(max_length = 50, unique = True)
+    user = models.CharField(max_length = 50, unique = True, null = True)
     name = models.CharField(max_length=255, null=False, default="")
     access_token = models.CharField(max_length=255, null=False, default="")
     workspace_name = models.CharField(max_length=255, null=False, default="")

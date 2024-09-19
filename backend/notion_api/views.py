@@ -49,7 +49,7 @@ def notion_callback(request):
 
     request.session.save()
     
-    return redirect('http://localhost:5173/dashboard') 
+    return redirect('http://localhost:8000/is_authenticated') 
 
 
 def is_authenticated(request):
@@ -112,32 +112,38 @@ def fetch_notion_pages(request):
 
 
 def fetch_important_sections(request):
+    if not request.session.get('is_authenticated'):
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+
     token = request.session.get('oauth_token')
-    print(token)
-    page_id = request.GET.get('page_id')
+    access_token = token['access_token']
+    page_id = NotionToken.objects.get(user = request.session.user)
+
     url = f"https://api.notion.com/v1/blocks/{page_id}/children"
     headers = {
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"Bearer {access_token}",
         "Notion-Version": "2022-06-28"
     }
 
-    response = requests.get(url, headers = headers)
+    
+    response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
+        
         blocks = response.json().get('results', [])
-        keywords = ['#important', '#summary']  # You can extend this to accept user input
+        keywords = ['#important', '#summary']
         sections = ['heading_1', 'heading_2']
         filtered_blocks = []
 
         for block in blocks:
-                block_type = block['type']
-                if block_type in sections:
+            block_type = block['type']
+            if block_type in sections:
+                filtered_blocks.append(block)
+            else:
+                content = block[block_type].get('text', [])
+                text = ''.join([elem['text']['content'] for elem in content])
+                if any(keyword in text for keyword in keywords):
                     filtered_blocks.append(block)
-                else:
-                    content = block[block_type].get('text', [])
-                    text = ''.join([elem['text']['content'] for elem in content])
-                    if any(keyword in text for keyword in keywords):
-                        filtered_blocks.append(block)
 
         return JsonResponse({'filtered_blocks': filtered_blocks})
     else:
