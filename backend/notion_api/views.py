@@ -11,6 +11,7 @@ from .ultils import get_user_token,check_notion_login
 from requests_oauthlib import OAuth2Session
 import json
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
 
@@ -45,7 +46,16 @@ def notion_callback(request):
 
     # Create or update NotionToken
     
-    print(request.session['oauth_token'],request.session["is_authenticated"] )
+    user_info = token.get('owner').get('user')
+    username = user_info.get('name')
+
+    # Create or get the user in Django's User model
+    user, created = User.objects.get_or_create(username=username)
+
+    print(user, user_info)
+    
+    # Link this user to the session
+    request.session['user_id'] = user.id
 
     request.session.save()
     
